@@ -4,19 +4,19 @@ class Ressource {
   final String name;
   final int size;   // in MB
 
-  Ressource({required this.name, required this.size}); 
+  Ressource({required this.name, required this.size});
 }
 
 enum DownloadStatus { notDownloaded, downloading, downloaded }
 
 class DownloadController extends ChangeNotifier {
-  
+
   DownloadController(this.ressource);
 
   // DATA
   Ressource ressource;
-  DownloadStatus _status = DownloadStatus.notDownloaded;
-  double _progress = 0.0;         // 0.0 → 1.0
+  final DownloadStatus _status = DownloadStatus.notDownloaded;
+  final double _progress = 0.0;         // 0.0 → 1.0
 
   // GETTERS
   DownloadStatus get status => _status;

@@ -11,6 +11,8 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
+      height: double.infinity,
       color: currentThemeColor.backgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -39,7 +41,9 @@ class SettingsScreen extends StatelessWidget {
                   (theme) => ThemeColorButton(
                     themeColor: theme,
                     isSelected: theme == currentThemeColor,
-                    onTap: (value) { },
+                    onTap: (value) {
+                      themeColorProvider.updateThemeColor(value);
+                    },
                   ),
                 )
                 .toList(),

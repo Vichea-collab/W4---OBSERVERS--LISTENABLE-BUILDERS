@@ -24,6 +24,8 @@ class DownloadsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
+      height: double.infinity,
       color: currentThemeColor.backgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
