@@ -9,26 +9,29 @@ void main() {
   );
 }
 
-enum CardType { red, green, yellow, blue }
+enum CardType {
+  red('Red', Colors.red),
+  green('Green', Colors.green),
+  yellow('Yellow', Colors.yellow),
+  blue('Blue', Colors.blue);
+
+  final String label;
+  final Color color;
+
+  const CardType(this.label, this.color);
+}
 
 class ColorService extends ChangeNotifier {
-  int redTapCount = 0;
-  int greenTapCount = 0;
-  int yellowTapCount = 0;
-  int blueTapCount = 0;
+  final Map<CardType, int> tapCounts = {
+    for (final type in CardType.values) type: 0,
+  };
 
   void increment(CardType type) {
-    if (type == CardType.red) {
-      redTapCount++;
-    } else if (type == CardType.green) {
-      greenTapCount++;
-    } else if (type == CardType.yellow) {
-      yellowTapCount++;
-    } else {
-      blueTapCount++;
-    }
+    tapCounts[type] = (tapCounts[type] ?? 0) + 1;
     notifyListeners();
   }
+
+  int getTapCount(CardType type) => tapCounts[type] ?? 0;
 }
 
 final ColorService colorService = ColorService();
@@ -79,12 +82,10 @@ class ColorTapsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Color Taps')),
       body: Column(
-        children: [
-          ColorTap(type: CardType.red),
-          ColorTap(type: CardType.green),
-          ColorTap(type: CardType.yellow),
-          ColorTap(type: CardType.blue),
-        ],
+        children:
+            CardType.values
+                .map((type) => ColorTap(type: type))
+                .toList(),
       ),
     );
   }
@@ -95,26 +96,14 @@ class ColorTap extends StatelessWidget {
 
   const ColorTap({super.key, required this.type});
 
-  Color get backgroundColor {
-    if (type == CardType.red) return Colors.red;
-    if (type == CardType.green) return Colors.green;
-    if (type == CardType.yellow) return Colors.yellow;
-    return Colors.blue;
-  }
+  Color get backgroundColor => type.color;
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: colorService,
       builder: (context, child) {
-        final int tapCount =
-            type == CardType.red
-                ? colorService.redTapCount
-                : type == CardType.green
-                ? colorService.greenTapCount
-                : type == CardType.yellow
-                ? colorService.yellowTapCount
-                : colorService.blueTapCount;
+        final int tapCount = colorService.getTapCount(type);
         return GestureDetector(
           onTap: () {
             colorService.increment(type);
@@ -153,24 +142,15 @@ class StatisticsScreen extends StatelessWidget {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Red Taps: ${colorService.redTapCount}',
-                  style: TextStyle(fontSize: 24),
-                ),
-                Text(
-                  'Green Taps: ${colorService.greenTapCount}',
-                  style: TextStyle(fontSize: 24),
-                ),
-                Text(
-                  'Yellow Taps: ${colorService.yellowTapCount}',
-                  style: TextStyle(fontSize: 24),
-                ),
-                Text(
-                  'Blue Taps: ${colorService.blueTapCount}',
-                  style: TextStyle(fontSize: 24),
-                ),
-              ],
+              children:
+                  CardType.values
+                      .map(
+                        (type) => Text(
+                          '${type.label} Taps: ${colorService.getTapCount(type)}',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                      )
+                      .toList(),
             ),
           );
         },
